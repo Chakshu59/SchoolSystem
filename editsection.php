@@ -75,10 +75,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     <h3>Instructor:</h3>
     <?php
-        $stmt = $conn->prepare('SELECT i.instructor_id, i.instructor_name FROM instructor i LEFT JOIN (SELECT instructor_id FROM section WHERE course_id = ? GROUP BY instructor_id HAVING COUNT(section_id) > 1) s ON i.instructor_id = s.instructor_id WHERE s.instructor_id IS NULL');
-        $stmt->bind_param("s", $course_id);
-        $stmt->execute();
-        $stmt = $stmt->get_result();
+        $stmt = $conn->query('SELECT i.instructor_id, i.instructor_name FROM instructor i LEFT JOIN (SELECT instructor_id FROM section GROUP BY instructor_id HAVING COUNT(section_id) > 1) s ON i.instructor_id = s.instructor_id WHERE s.instructor_id IS NULL');
         if ($stmt->num_rows > 0) {
             while ($row = $stmt->fetch_assoc()) {
                 echo "<label><input type='radio' name='instructor_id' value='". $row["instructor_id"] . "' " . ($row["instructor_id"] == $instructor_id ? 'checked' : '') . " onchange='this.form.submit()'> " . $row["instructor_name"] . "</label><br>";
@@ -102,11 +99,68 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     ?>
     <h3>Time:</h3>
     <?php
-        if ($instructor_id) {
-            $stmt = $conn->query('SELECT time_slot_id, day, start_time, end_time FROM time_slot');
-            //$stmt->bind_param("s", $instructor_id);
-            //$stmt->execute();
-            //$stmt = $stmt->get_result();
+        if ($instructor_id && $classroom_id && $semester) {
+            /* Query for time slots given instructor and classroom
+            *   1. If classroom is taken during the same time and year for another class, then exclude that timeslot
+            *   2. Check if professor is teaching to determine whether to show only adjacent timeslots or all open timeslots
+            *   3. Check of two sections exist at the same time slot in the same semester/year, then exclude timeslot
+            */
+            $stmt = $conn->prepare("
+                SELECT ts.time_slot_id, ts.day, ts.start_time, ts.end_time
+                FROM time_slot ts
+                WHERE 
+                    -- Classroom is not taken by another class in the same semester & year
+                    NOT EXISTS (
+                        SELECT * FROM section s1
+                        WHERE s1.classroom_id = ? 
+                        AND s1.time_slot_id = ts.time_slot_id
+                        AND s1.semester = ? 
+                        AND s1.year = ?
+                    )
+
+                    -- Check if professor is teaching to determine whether to show only adjacent timeslots or all open timeslots
+                    AND (
+                        NOT EXISTS (
+                            SELECT * FROM section s2
+                            WHERE s2.instructor_id = ?
+                            AND s2.semester = ?
+                            AND s2.year = ?
+                        )
+                        -- If the professor is teaching, show only adjecent timeslots in same day, year, and semester
+                        OR EXISTS (
+                            SELECT * FROM section s3
+                            JOIN time_slot ts3 ON s3.time_slot_id = ts3.time_slot_id
+                            WHERE s3.instructor_id = ?
+                            AND s3.semester = ?
+                            AND s3.year = ?
+                            AND ts3.day = ts.day
+                            AND (
+                                ts3.end_time BETWEEN ts.start_time - INTERVAL 1 HOUR AND ts.start_time
+                                OR ts3.start_time BETWEEN ts.end_time AND ts.end_time + INTERVAL 1 HOUR
+                            )
+                        )
+                  )
+
+                 -- Check of two sections exist at the same time slot in the same semester/year
+                    AND (
+                        (SELECT COUNT(*) FROM section s4 
+                         WHERE s4.time_slot_id = ts.time_slot_id
+                         AND s4.semester = ?
+                         AND s4.year = ?
+                        ) < 2
+                    )
+            ");
+
+            // Bind parameters
+            $stmt->bind_param(
+                "sssssssssss", 
+                $classroom_id, $semester, $year, 
+                $instructor_id, $semester, $year, 
+                $instructor_id, $semester, $year, 
+                $semester, $year
+            );
+            $stmt->execute();
+            $stmt = $stmt->get_result();
         } else {
             $stmt = $conn->query('SELECT time_slot_id, day, start_time, end_time FROM time_slot');
         }
