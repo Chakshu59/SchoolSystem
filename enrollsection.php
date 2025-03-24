@@ -34,25 +34,64 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $time_slot_id = $_POST["time_slot_id"];
         $grade = NULL;
 
-        $stmt = $conn->prepare("SELECT * FROM take WHERE student_id = ? AND course_id = ? AND section_id = ? AND semester = ? AND year = ?;");
-        $stmt->bind_param("sssss", $student_id, $course_id, $section_id, $semester, $year);
-        $stmt->execute();
-        $stmt = $stmt->get_result();
-        
-        if ($stmt->num_rows > 0) {
-            echo "Error: Already enrolled in this section";
-            $stmt->close();
-        } else {
-            $stmt->close();
-            //Insert the new info into the database
-            $stmt = $conn->prepare("INSERT INTO take(student_id, course_id, section_id, semester, year, grade) VALUES (?, ?, ?, ?, ?, ?)");
-            $stmt->bind_param("ssssss", $student_id, $course_id, $section_id, $semester, $year, $grade);
+        $prerequisite_met = true;
 
-            if ($stmt->execute()) {
-                echo "Enrolled in $section_id for $course_name";
+        // Check if the student has taken the prerequisite class
+        $stmt = $conn->prepare("SELECT prereq_id FROM prereq WHERE course_id = ?");
+        $stmt->bind_param("s", $course_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        while ($row = $result->fetch_assoc()) {
+            $prereq_id = $row['prereq_id'];
+            $stmt2 = $conn->prepare("SELECT * FROM take WHERE student_id = ? AND course_id = ? AND grade IS NOT NULL");
+            $stmt2->bind_param("ss", $student_id, $prereq_id);
+            $stmt2->execute();
+            $result2 = $stmt2->get_result();
+            if ($result2->num_rows == 0) {
+                $prerequisite_met = false;
+                break;
+            }
+            $stmt2->close();
+        }
+        $stmt->close();
+
+        if (!$prerequisite_met) {
+            echo "Error: Prerequisite not met";
+        }
+
+        if ($prerequisite_met) {
+            $stmt = $conn->prepare("SELECT * FROM take WHERE course_id = ? AND section_id = ? AND semester = ? AND year = ?;");
+            $stmt->bind_param("ssss", $course_id, $section_id, $semester, $year);
+            $stmt->execute();
+            $stmt = $stmt->get_result();
+            if ($stmt->num_rows > 14) {
+                echo "Error: Section is full";
+                $stmt->close();
             } else {
-                echo "Error enrolling in section: " . $stmt->error;
-            } 
+                $stmt->close();
+                // Check if student is already enrolled in this section
+                $stmt = $conn->prepare("SELECT * FROM take WHERE student_id = ? AND course_id = ? AND section_id = ? AND semester = ? AND year = ?;");
+                $stmt->bind_param("sssss", $student_id, $course_id, $section_id, $semester, $year);
+                $stmt->execute();
+                $stmt = $stmt->get_result();
+
+                if ($stmt->num_rows > 0) {
+                    echo "Error: Already enrolled in this section";
+                    $stmt->close();
+                } else {
+                    $stmt->close();
+                    // Insert the new info into the database
+                    $stmt = $conn->prepare("INSERT INTO take(student_id, course_id, section_id, semester, year, grade) VALUES (?, ?, ?, ?, ?, ?)");
+                    $stmt->bind_param("ssssss", $student_id, $course_id, $section_id, $semester, $year, $grade);
+
+                    if ($stmt->execute()) {
+                        echo "Enrolled in $section_id for $course_name";
+                    } else {
+                        echo "Error enrolling in section: " . $stmt->error;
+                    }
+                }
+            }
         }
     }
 }
