@@ -29,8 +29,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $section_id = $_POST['section_id'];
         $semester = $_POST['semester'];
         $year = $_POST['year'];
-        $instructor_id = $_POST['instructor_id'];
-        $classroom_id = $_POST['classroom_id'];
+        $instructor_id = !empty($_POST['instructor_id']) ? $_POST['instructor_id'] : NULL;
+        $classroom_id = !empty($_POST['classroom_id']) ? $_POST['classroom_id'] : NULL;
         $time_slot_id = !empty($_POST['time_slot_id']) ? $_POST['time_slot_id'] : NULL;
 
         // Selects the course name of the current course
