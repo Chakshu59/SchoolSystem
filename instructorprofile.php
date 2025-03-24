@@ -36,6 +36,7 @@ if ($stmt->num_rows > 0) {
 } else {
     $name = "Null";
 }
+$_SESSION['instructor_id'] = $instructor_id;
 ?>
 
 <!DOCTYPE html>
@@ -54,7 +55,7 @@ if ($stmt->num_rows > 0) {
     <p>Department: <?php echo htmlspecialchars($dept_name); ?></p>
     
     <button onclick="window.location.href='passwordChange.html'">Change Password</button>
-
+    <button onclick="window.location.href='courseHistory.php'">Course History</button>
     <p><a href="logout.php">Logout</a></p>
 </body>
 </html>
