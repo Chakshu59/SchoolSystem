@@ -29,8 +29,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $section_id = $_POST['section_id'];
         $semester = $_POST['semester'];
         $year = $_POST['year'];
-        $instructor_id = $_POST['instructor_id'];
-        $classroom_id = $_POST['classroom_id'];
+        $instructor_id = !empty($_POST['instructor_id']) ? $_POST['instructor_id'] : NULL;
+        $classroom_id = !empty($_POST['classroom_id']) ? $_POST['classroom_id'] : NULL;
         $time_slot_id = !empty($_POST['time_slot_id']) ? $_POST['time_slot_id'] : NULL;
 
         // Selects the course name of the current course
@@ -64,14 +64,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <h2>Editing: <?php echo htmlspecialchars($name) ?> - <?php echo htmlspecialchars($section_id) ?></h2>
 
     <form action="editsection.php" method="post">
-    <h3>Semester:</h3>
-    <input type="radio" name="semester" value="Fall" <?php echo ($semester == 'Fall') ? 'checked' : ''; ?>>Fall
-    <input type="radio" name="semester" value="Spring" <?php echo ($semester == 'Spring') ? 'checked' : ''; ?>>Spring
-    <input type="radio" name="semester" value="Summer" <?php echo ($semester == 'Summer') ? 'checked' : ''; ?>>Summer
-    <input type="radio" name="semester" value="Winter" <?php echo ($semester == 'Winter') ? 'checked' : ''; ?>>Winter
-
-    <h3>Year:</h3>
-    <input type="text" name="year" value="<?php echo htmlspecialchars($year); ?>">
 
     <h3>Instructor:</h3>
     <?php
@@ -175,9 +167,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     ?>
     <input type="hidden" name="course_id" value="<?php echo htmlspecialchars($course_id) ?>">
     <input type="hidden" name="section_id" value="<?php echo htmlspecialchars($section_id) ?>">
+    <input type="hidden" name="classroom_id" value="<?php echo htmlspecialchars($classroom_id) ?>">
     <input type="hidden" name="semester" value="<?php echo htmlspecialchars($semester) ?>">
     <input type="hidden" name="year" value="<?php echo htmlspecialchars($year) ?>">
-    <input type="hidden" name="classroom_id" value="<?php echo htmlspecialchars($classroom_id) ?>">
     <input type="submit" value="Save" formaction="updatesection.php">
     </form>
     <button onclick="window.location.href='editclasses.php'">Back</button>
