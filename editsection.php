@@ -84,7 +84,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $stmt = $conn->query('SELECT classroom_id, building, room_number, capacity FROM classroom');
             if ($stmt->num_rows > 0) {
                 while ($row = $stmt->fetch_assoc()) {
-                    echo "<label><input type='radio' name='classroom_id' value='". $row["classroom_id"] . "' " . ($row["classroom_id"] == $classroom_id ? 'checked' : '') . ">Classroom ID:" . $row["classroom_id"] . " - Building:" . $row["building"] . " - Room Number:" . $row["room_number"] . " - Capacity:" . $row["capacity"] . "</label><br>";
+                    echo "<label><input type='radio' name='classroom_id' value='". $row["classroom_id"] . "' " . ($row["classroom_id"] == $classroom_id ? 'checked' : '') . " onchange=\"document.getElementById('classroom_id_hidden').value=this.value; this.form.submit();\">Classroom ID:" . $row["classroom_id"] . " - Building:" . $row["building"] . " - Room Number:" . $row["room_number"] . " - Capacity:" . $row["capacity"] . "</label><br>";
                 }
             } else {
                 echo "<p>No Classrooms Available</p>";
