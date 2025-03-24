@@ -30,10 +30,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['course_id'])) {
         $instructor_id = !empty($_POST['instructor_id']) ? $_POST['instructor_id'] : NULL;
         $classroom_id = !empty($_POST['classroom_id']) ? $_POST['classroom_id'] : NULL;
         $time_slot_id = !empty($_POST['time_slot_id']) ? $_POST['time_slot_id'] : NULL;
+        $course_id = !empty($_POST['course_id']) ? $_POST['course_id'] : NULL;
 
         // Check if the section_id already exists
-        $stmt = $conn->prepare("SELECT section_id FROM section WHERE section_id = ?");
-        $stmt->bind_param("s", $new_section_id);
+        $stmt = $conn->prepare("SELECT section_id FROM section WHERE section_id = ? AND year = ? AND semester = ? AND course_id = ?;");
+        $stmt->bind_param("ssss", $new_section_id, $year, $semester, $course_id);
         $stmt->execute();
         $stmt->store_result();
 
