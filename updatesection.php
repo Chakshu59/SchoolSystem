@@ -29,8 +29,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $classroom_id = $_POST['classroom_id'];
     $time_slot_id = $_POST['time_slot_id'];
 
-    $stmt = $conn->prepare("UPDATE section SET semester = ?, year = ?, instructor_id = ?, classroom_id = ?, time_slot_id = ? WHERE course_id = ? AND section_id = ?;");
-    $stmt->bind_param("sssssss", $semester, $year, $instructor_id, $classroom_id, $time_slot_id, $course_id, $section_id);
+    $stmt = $conn->prepare("UPDATE section SET instructor_id = ?, classroom_id = ?, time_slot_id = ? WHERE course_id = ? AND section_id = ? AND year = ? AND semester = ?;");
+    $stmt->bind_param("sssssss", $instructor_id, $classroom_id, $time_slot_id, $course_id, $section_id, $year, $semester);
     $stmt->execute();
     $stmt->close();
 }
