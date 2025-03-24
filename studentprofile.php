@@ -56,6 +56,10 @@ if ($stmt->num_rows > 0) {
 
     <h3>Course Registration</h3>
     <button onclick="window.location.href='enrollcourse.php'">Enroll</button>
+
+    <h3>Schedule & GPA</h3>
+    <button onclick="window.location.href='studentTranscript.php'">Transcript</button>
+
     <?php
     //Set session data
     $_SESSION["student_id"] = $student_id;
