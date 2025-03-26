@@ -53,9 +53,14 @@ if ($stmt->num_rows > 0) {
     <p>Department: <?php echo htmlspecialchars($dept_name); ?></p>
     
     <button onclick="window.location.href='passwordChange.html'">Change Password</button>
+    <button onclick="window.location.href='addParent.php'">Add Parent</button>
 
     <h3>Course Registration</h3>
     <button onclick="window.location.href='enrollcourse.php'">Enroll</button>
+
+    <h3>Schedule & GPA</h3>
+    <button onclick="window.location.href='studentTranscript.php'">Transcript</button>
+
     <?php
     //Set session data
     $_SESSION["student_id"] = $student_id;
