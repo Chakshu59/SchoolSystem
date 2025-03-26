@@ -21,10 +21,28 @@ if (!isset($_SESSION['email'])) {
 }
 
 // Get session data
-$email = $_SESSION['email'];
 $password = $_SESSION['password'];
 $user_type = $_SESSION['type'];
 
+if (isset($_GET['student_id'])) {
+    $stmt = $conn->prepare("SELECT email FROM student WHERE student_id = ?");
+    $stmt->bind_param("s", $_GET['student_id']);
+    $stmt->execute();
+    $stmt->store_result();
+    $stmt->bind_result($email);
+    $stmt->fetch();
+    $stmt->close();
+    $stmt = $conn->prepare("SELECT name FROM student WHERE student_id = ?");
+    $stmt->bind_param("s", $_GET['student_id']);
+    $stmt->execute();
+    $stmt->store_result();
+    $stmt->bind_result($name);
+    $stmt->fetch();
+    $stmt->close();
+} else {
+    $email = $_SESSION['email'];
+    $name = $_SESSION['name'];
+}
 ?>
 
 <!DOCTYPE html>
@@ -35,7 +53,7 @@ $user_type = $_SESSION['type'];
     <title>User Profile</title>
 </head>
 <body>
-    <h2>Transcript for, <?php echo htmlspecialchars($_SESSION["name"]); ?>!</h2>
+    <h2>Transcript for, <?php echo htmlspecialchars($name); ?>!</h2>
     <div>
         <h3>Classes Taken</h3>
         <table border="1">

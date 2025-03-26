@@ -44,6 +44,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             } else if ($user_type == "instructor") {
                 header("Location: instructorprofile.php");
                 exit();
+            } else if ($user_type == "parent") {
+                header("Location: parentprofile.php");
+                exit();
             }
         } else {
             echo "Error: Incorrect Password";
