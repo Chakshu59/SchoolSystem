@@ -19,23 +19,6 @@ if (!isset($_SESSION['email'])) {
     header("Location: login.html"); // Redirect to login page if not logged in
     exit();
 }
-
-// Get session data
-$email = $_SESSION['email'];
-$password = $_SESSION['password'];
-$user_type = $_SESSION['type'];
-
-$stmt = $conn->prepare("SELECT student_id, name, dept_name  FROM student WHERE email = (SELECT email FROM account WHERE email = ?);");
-$stmt->bind_param("s", $email);
-$stmt->execute();
-$stmt->store_result();
-
-if ($stmt->num_rows > 0) {
-    $stmt->bind_result($student_id, $name, $dept_name);
-    $stmt->fetch();
-} else {
-    $name = "Null";
-}
 ?>
 
 <!DOCTYPE html>
@@ -49,6 +32,7 @@ if ($stmt->num_rows > 0) {
     <h2>Admin Control</h2>
 
     <button onclick="window.location.href='editclasses.php'">Edit Classes</button>
+    <button onclick="window.location.href='editadvisors.php'">Edit Advisors</button>
     
     <p><a href="logout.php">Logout</a></p>
 </body>

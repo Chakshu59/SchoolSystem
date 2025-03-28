@@ -56,6 +56,8 @@ $_SESSION['instructor_id'] = $instructor_id;
     
     <button onclick="window.location.href='passwordChange.html'">Change Password</button>
     <button onclick="window.location.href='courseHistory.php'">Course History</button>
+    <button onclick="window.location.href='advisors.php'">Advisees Information</button>
+    <button onclick="window.location.href='editadvisors.php'">Edit Advisors</button>
     <p><a href="logout.php">Logout</a></p>
 </body>
 </html>

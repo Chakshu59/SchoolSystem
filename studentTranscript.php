@@ -39,10 +39,29 @@ if (isset($_GET['student_id'])) {
     $stmt->bind_result($name);
     $stmt->fetch();
     $stmt->close();
+    $student_id = $_GET['student_id'];
 } else {
     $email = $_SESSION['email'];
     $name = $_SESSION['name'];
+    $stmt = $conn->prepare("SELECT student_id FROM student WHERE email = ?;");
+    $stmt->bind_param("s", $email);
+    $stmt->execute();
+    $stmt->bind_result($student_id);
+    $stmt->fetch();
+    $stmt->close();
 }
+
+//Check if student is phd student
+$stmt = $conn->prepare("SELECT student_id FROM phd where student_id =?;");
+$stmt->bind_param("s",$student_id);
+$stmt->execute();
+$stmt->store_result();
+if ($stmt->num_rows > 0) {
+    $phd = true;
+} else {
+    $phd = false;
+}
+$stmt->close();
 ?>
 
 <!DOCTYPE html>
@@ -151,6 +170,21 @@ if (isset($_GET['student_id'])) {
         echo "<h3>GPA: " . number_format($gpa, 2) . "</h3>";
         ?>
     </div>
+    <?php
+        if ($phd) {
+        // Fetch dissertation and proposal date for the PhD student
+            $stmt = $conn->prepare("SELECT proposal_defence_date, dissertation_defence_date FROM phd WHERE student_id = ?;");
+            $stmt->bind_param("s", $student_id);
+            $stmt->execute();
+            $stmt->store_result();
+            $stmt->bind_result($proposal_date, $dissertation_date);
+            $stmt->fetch();
+            $stmt->close();
+
+            echo "<p><strong>Proposal Date:</strong> " . ($proposal_date ? htmlspecialchars($proposal_date) : "Not Available") . "</p>";
+            echo "<p><strong>Dissertation Date:</strong> " . ($dissertation_date ? htmlspecialchars($dissertation_date) : "Not Available") . "</p>";
+        }
+    ?>
     <p><a href="logout.php">Logout</a></p>
 </body>
 </html>

@@ -310,4 +310,3 @@ insert into take (student_id, course_id, section_id, semester, year) values ('12
 insert into take (student_id, course_id, section_id, semester, year) values ('12345678','COMP1020','Section101','Spring',2024);
 insert into take (student_id, course_id, section_id, semester, year) values ('12345684','COMP1010','Section101','Fall',2023);
 
-
