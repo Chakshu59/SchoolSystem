@@ -46,6 +46,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['course_id'])) {
         $stmt->close();
 
         // Check if the instructor_id exists if it's not NULL
+        /*
         if ($instructor_id) {
             $stmt = $conn->prepare("SELECT instructor_id FROM instructor WHERE instructor_id = ?");
             $stmt->bind_param("s", $instructor_id);
@@ -59,6 +60,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['course_id'])) {
             }
             $stmt->close();
         }
+        */
 
         //Insert the new section into the database
         $stmt = $conn->prepare("INSERT INTO section (section_id, course_id, semester, year, instructor_id, classroom_id, time_slot_id) VALUES (?, ?, ?, ?, ?, ?, ?)");
@@ -89,8 +91,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['course_id'])) {
     $stmt = $conn->prepare("SELECT section_id, semester, year, instructor_id, classroom_id, time_slot_id FROM section WHERE course_id = ?;");
     $stmt->bind_param("s", $course_id);
     $stmt->execute();
-
     $stmt = $stmt->get_result();
+
 }
 ?>
 
@@ -113,13 +115,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['course_id'])) {
                 <th>Instructor</th>
                 <th>Classroom</th>
                 <th>Time Slot</th>
+                <th>TA</th>
                 <th></th>
             </tr>
         </thead>
         <tbody>
             <?php
+                $taQuery = $conn->prepare("SELECT student_id AS ta_student_id FROM ta WHERE section_id = ? AND semester = ? AND year = ?;");
+                $taQuery->bind_param("sss", $section_id, $semester, $year);
                 if ($stmt->num_rows > 0) {
                     while($row = $stmt->fetch_assoc()) {
+                        $section_id = $row["section_id"];
+                        $semester = $row["semester"];
+                        $year = $row["year"]; 
+                        $taQuery->execute();
+                        $taResult = $taQuery->get_result();
+                        $taRow = $taResult->fetch_assoc();
+                        $taStudentID = $taRow ? $taRow["ta_student_id"] : "";
                         echo "<tr>
                                 <td>" . $row["section_id"] . "</td>
                                 <td>" . $row["semester"] . "</td>
@@ -127,6 +139,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['course_id'])) {
                                 <td>" . $row["instructor_id"] . "</td>
                                 <td>" . $row["classroom_id"] . "</td>
                                 <td>" . $row["time_slot_id"] . "</td>
+                                <td>" . htmlspecialchars($taStudentID) . "</td>
                                 <td>
                                     <form action='editsection.php' method='POST' style='display:inline;'>
                                         <input type='hidden' name='section_id' value='" . $row["section_id"] . "'>
@@ -144,10 +157,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['course_id'])) {
                 } else {
                     echo "<tr><td colspan='7'>No Sections Found</td></tr>";
                 }
+                $taQuery->close();
             ?>
         </tbody>
     </table>
 
+    <form action="assignTA.php" method="post">
+        <input type="hidden" name="course_id" value="<?php echo htmlspecialchars($course_id); ?>">
+        <button type="submit">Assign TA</button>
+    </form>
+    
     <h3>Add A New Section</h3>
     <form action="displaysections.php" method="post">
         <input type="hidden" name="course_id" value="<?php echo htmlspecialchars($course_id); ?>">
