@@ -68,6 +68,35 @@ if ($stmt->num_rows > 0) {
     $_SESSION["dept_name"] = $dept_name;
     ?>
 
+    <h3>Alerts</h3>
+    <table border="1">
+        <tr>
+            <th>Alert Type</th>
+            <th>Alert Message</th>
+            
+        </tr>
+        <?php
+        // Query to fetch alerts for the student
+        $stmt = $conn->prepare("SELECT alert_type, alert FROM alerts WHERE student_id = ?");
+        $stmt->bind_param("s", $student_id);
+        $stmt->execute();
+        $stmt->store_result();
+        $stmt->bind_result($alert_type, $alert);
+
+        if ($stmt->num_rows > 0) {
+            while ($stmt->fetch()) {
+                echo "<tr>";
+                echo "<td>" . htmlspecialchars($alert_type) . "</td>";
+                echo "<td>" . htmlspecialchars($alert) . "</td>";
+                echo "</tr>";
+            }
+        } else {
+            echo "<tr><td colspan='3'>No alerts available</td></tr>";
+        }
+        $stmt->close();
+        ?>
+    </table>
+
     <p><a href="logout.php">Logout</a></p>
 </body>
 </html>

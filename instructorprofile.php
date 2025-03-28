@@ -30,6 +30,22 @@ $stmt->bind_param("s", $email);
 $stmt->execute();
 $stmt->store_result();
 
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $student_id = $_POST['student_id'] ?? '';
+    $alert_type = $_POST['alert_type'] ?? '';
+    $alert = $_POST['alert'] ?? '';
+
+    // Insert alert into the database
+    $stmt = $conn->prepare("INSERT INTO alerts (student_id, alert_type, alert) VALUES (?, ?, ?)");
+    $stmt->bind_param("sss", $student_id, $alert_type, $alert);
+    if ($stmt->execute()) {
+        echo "Alert created successfully.";
+    } else {
+        echo "Error creating alert: " . $stmt->error;
+    }
+    $stmt->close();
+}
+
 if ($stmt->num_rows > 0) {
     $stmt->bind_result($instructor_id, $name, $title, $dept_name);
     $stmt->fetch();
@@ -56,6 +72,18 @@ $_SESSION['instructor_id'] = $instructor_id;
     
     <button onclick="window.location.href='passwordChange.html'">Change Password</button>
     <button onclick="window.location.href='courseHistory.php'">Course History</button>
+    <form action="instructorprofile.php" method="post">
+        <label for="student_id">Student ID:</label><br>
+        <input type="text" id="student_id" name="student_id" required><br><br>
+        <label for="alert_type">Alert Type:</label><br>
+        <select id="alert_type" name="alert_type" required>
+            <option value="Academic">Academic</option>
+            <option value="Other">Other</option>
+        </select><br><br>
+        <label for="alert">Alert:</label><br>
+        <input type="text" id="alert" name="alert" required><br><br>
+        <input type="submit" value="Create Alert">
+    </form>
     <p><a href="logout.php">Logout</a></p>
 </body>
 </html>
