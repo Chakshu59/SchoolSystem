@@ -306,10 +306,14 @@ insert into TA (student_id, course_id, section_id, semester, year) values ('1234
 
 insert into take (student_id, course_id, section_id, semester, year) values ('12345678','COMP2010','Section101','Fall',2023);
 insert into take (student_id, course_id, section_id, semester, year) values ('12345679','COMP2010','Section102','Fall',2023);
-insert into take (student_id, course_id, section_id, semester, year) values ('12345680','COMP1020','Section101','Spring',2024);
-insert into take (student_id, course_id, section_id, semester, year) values ('12345678','COMP1020','Section101','Spring',2024);
-insert into take (student_id, course_id, section_id, semester, year) values ('12345684','COMP1010','Section101','Fall',2023);
 
+insert into take (student_id, course_id, section_id, semester, year) values ('12345680','COMP1020','Section101','Spring',2024);
+insert into take (student_id, course_id, section_id, semester, year, grade) values ('12345680','COMP1010','Section101','Fall',2023, 'A');
+
+insert into take (student_id, course_id, section_id, semester, year) values ('12345678','COMP1020','Section101','Spring',2024);
+insert into take (student_id, course_id, section_id, semester, year, grade) values ('12345678','COMP1010','Section101','Fall',2023, 'B');
+
+insert into take (student_id, course_id, section_id, semester, year) values ('12345684','COMP1010','Section101','Fall',2023);
 insert into take (student_id, course_id, section_id, semester, year) values ('12345685','COMP1010','Section101','Fall',2023);
 insert into take (student_id, course_id, section_id, semester, year) values ('12345686','COMP1010','Section101','Fall',2023);
 insert into take (student_id, course_id, section_id, semester, year) values ('12345687','COMP1010','Section101','Fall',2023);
@@ -317,8 +321,8 @@ insert into take (student_id, course_id, section_id, semester, year) values ('12
 insert into take (student_id, course_id, section_id, semester, year) values ('12345689','COMP1010','Section101','Fall',2023);
 insert into take (student_id, course_id, section_id, semester, year) values ('12345690','COMP1010','Section101','Fall',2023);
 insert into take (student_id, course_id, section_id, semester, year) values ('12345691','COMP1010','Section101','Fall',2023);
-insert into take (student_id, course_id, section_id, semester, year) values ('12345692','COMP1010','Section101','Fall',2023);
-insert into take (student_id, course_id, section_id, semester, year) values ('12345693','COMP1010','Section101','Fall',2023);
-insert into take (student_id, course_id, section_id, semester, year) values ('12345694','COMP1010','Section101','Fall',2023);
+insert into take (student_id, course_id, section_id, semester, year) values ('12345692','COMP1020','Section102','Spring',2024);
+insert into take (student_id, course_id, section_id, semester, year) values ('12345693','COMP1020','Section102','Spring',2024);
+insert into take (student_id, course_id, section_id, semester, year) values ('12345694','COMP1020','Section102','Spring',2024);
 
 
