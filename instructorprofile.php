@@ -84,6 +84,8 @@ $_SESSION['instructor_id'] = $instructor_id;
         <input type="text" id="alert" name="alert" required><br><br>
         <input type="submit" value="Create Alert">
     </form>
+    <button onclick="window.location.href='advisors.php'">Advisees Information</button>
+    <button onclick="window.location.href='editadvisors.php'">Edit Advisors</button>
     <p><a href="logout.php">Logout</a></p>
 </body>
 </html>
