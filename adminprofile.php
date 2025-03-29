@@ -19,42 +19,6 @@ if (!isset($_SESSION['email'])) {
     header("Location: login.html"); // Redirect to login page if not logged in
     exit();
 }
-<<<<<<< HEAD
-=======
-
-// Get session data
-$email = $_SESSION['email'];
-$password = $_SESSION['password'];
-$user_type = $_SESSION['type'];
-
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $student_id = $_POST['student_id'] ?? '';
-    $alert_type = $_POST['alert_type'] ?? '';
-    $alert = $_POST['alert'] ?? '';
-
-    // Insert alert into the database
-    $stmt = $conn->prepare("INSERT INTO alerts (student_id, alert_type, alert) VALUES (?, ?, ?)");
-    $stmt->bind_param("sss", $student_id, $alert_type, $alert);
-    if ($stmt->execute()) {
-        echo "Alert created successfully.";
-    } else {
-        echo "Error creating alert: " . $stmt->error;
-    }
-    $stmt->close();
-}
-
-$stmt = $conn->prepare("SELECT student_id, name, dept_name  FROM student WHERE email = (SELECT email FROM account WHERE email = ?);");
-$stmt->bind_param("s", $email);
-$stmt->execute();
-$stmt->store_result();
-
-if ($stmt->num_rows > 0) {
-    $stmt->bind_result($student_id, $name, $dept_name);
-    $stmt->fetch();
-} else {
-    $name = "Null";
-}
->>>>>>> f75ed8e6ef0cfd3f7bd4a0ac14bab35b185633b0
 ?>
 
 <!DOCTYPE html>
@@ -68,10 +32,6 @@ if ($stmt->num_rows > 0) {
     <h2>Admin Control</h2>
 
     <button onclick="window.location.href='editclasses.php'">Edit Classes</button>
-<<<<<<< HEAD
-    <button onclick="window.location.href='editadvisors.php'">Edit Advisors</button>
-    
-=======
     <h3>Create Alert</h3>
     <form action="adminprofile.php" method="post">
         <label for="student_id">Student ID:</label><br>
@@ -128,7 +88,6 @@ if ($stmt->num_rows > 0) {
         ?>
     </table>
     </div>
->>>>>>> f75ed8e6ef0cfd3f7bd4a0ac14bab35b185633b0
     <p><a href="logout.php">Logout</a></p>
 </body>
 </html>
