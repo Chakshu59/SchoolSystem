@@ -57,6 +57,7 @@ if ($stmt->num_rows > 0) {
 
     <h3>Course Registration</h3>
     <button onclick="window.location.href='enrollcourse.php'">Enroll</button>
+    <button onclick="window.location.href='dropcourse.php'">Drop Course</button>
 
     <h3>Schedule & GPA</h3>
     <button onclick="window.location.href='studentTranscript.php'">Transcript</button>
