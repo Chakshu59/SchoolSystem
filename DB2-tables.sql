@@ -180,6 +180,14 @@ create table take
 		on delete cascade
 	);
 
+create table alerts
+	(student_id		varchar(24),
+	 alert_type	varchar(24),
+	 alert		varchar(1024),
+	 primary key(student_id, alert_type),
+	 foreign key (student_id) references student (student_id)
+	);
+
 insert into department (dept_name, location) value ('Miner School of Computer & Information Sciences', 'Dandeneau Hall, 1 University Avenue, Lowell, MA 01854');
 
 insert into account (email, password, type) values ('admin@uml.edu', '123456', 'admin');
