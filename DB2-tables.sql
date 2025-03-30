@@ -215,7 +215,7 @@ BEGIN
 	WHERE course_id = OLD.course_id AND section_id = OLD.section_id AND semester = OLD.semester AND year = OLD.year;
 END$$
 DELIMITER ;
-=======
+
 create table alerts
 	(student_id		varchar(24),
 	 alert_type	varchar(24),

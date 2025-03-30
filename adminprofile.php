@@ -19,8 +19,6 @@ if (!isset($_SESSION['email'])) {
     header("Location: login.html"); // Redirect to login page if not logged in
     exit();
 }
-<<<<<<< HEAD
-=======
 
 // Get session data
 $email = $_SESSION['email'];
@@ -54,7 +52,6 @@ if ($stmt->num_rows > 0) {
 } else {
     $name = "Null";
 }
->>>>>>> f75ed8e6ef0cfd3f7bd4a0ac14bab35b185633b0
 ?>
 
 <!DOCTYPE html>
@@ -68,10 +65,8 @@ if ($stmt->num_rows > 0) {
     <h2>Admin Control</h2>
 
     <button onclick="window.location.href='editclasses.php'">Edit Classes</button>
-<<<<<<< HEAD
     <button onclick="window.location.href='editadvisors.php'">Edit Advisors</button>
     
-=======
     <h3>Create Alert</h3>
     <form action="adminprofile.php" method="post">
         <label for="student_id">Student ID:</label><br>
@@ -128,7 +123,6 @@ if ($stmt->num_rows > 0) {
         ?>
     </table>
     </div>
->>>>>>> f75ed8e6ef0cfd3f7bd4a0ac14bab35b185633b0
     <p><a href="logout.php">Logout</a></p>
 </body>
 </html>
