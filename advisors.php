@@ -31,21 +31,24 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
     $student_id = $_POST['student_id'];
     $proposal_defence_date = $_POST['proposal_defence_date'];
     $dissertation_defence_date = $_POST['dissertation_defence_date'];
+    $qualifier = $_POST['qualifier'];
 
     // Update the proposal and dissertation defence dates
-    $stmt = $conn->prepare("UPDATE phd SET proposal_defence_date = ?, dissertation_defence_date = ? WHERE student_id = ?;");
-    $stmt->bind_param("sss", $proposal_defence_date, $dissertation_defence_date, $student_id);
+    $stmt = $conn->prepare("UPDATE phd SET proposal_defence_date = ?, dissertation_defence_date = ?, qualifier = ? WHERE student_id = ?;");
+    $stmt->bind_param("ssss", $proposal_defence_date, $dissertation_defence_date, $qualifier, $student_id);
     if ($stmt->execute()) {
-        echo "<script>alert('Dates updated successfully');window.location.href = '".$_SERVER['PHP_SELF']."';</script>";
+        echo "<script>alert('Student information updated successfully');window.location.href = '".$_SERVER['PHP_SELF']."';</script>";
     } else {
-        echo "<script>alert('Error updating dates: " . $stmt->error . "');window.location.href = '".$_SERVER['PHP_SELF']."';</script>";
+        echo "<script>alert('Error updating information: " . $stmt->error . "');window.location.href = '".$_SERVER['PHP_SELF']."';</script>";
     }
     $stmt->close();
+
+
 }
 
 
 //List all students instructor is advising
-$stmt = $conn->prepare("SELECT a.student_id, a.start_date, a.end_date, p.proposal_defence_date, p.dissertation_defence_date FROM advise a LEFT JOIN phd p ON a.student_id = p.student_id  WHERE instructor_id = ?;");
+$stmt = $conn->prepare("SELECT a.student_id, a.start_date, a.end_date, p.proposal_defence_date, p.dissertation_defence_date, p.qualifier FROM advise a LEFT JOIN phd p ON a.student_id = p.student_id  WHERE instructor_id = ?;");
 $stmt->bind_param("s", $instructor_id);
 $stmt->execute();
 $result = $stmt->get_result();
@@ -69,6 +72,7 @@ $result = $stmt->get_result();
                 <th>End Date</th>
                 <th>Proposal Defence Date</th>
                 <th>Dissertation Defence Date</th>
+                <th>Qualifier</th>
                 <th></th>
             </tr>
         </thead>
@@ -88,6 +92,12 @@ $result = $stmt->get_result();
                                     <input type='date' name='dissertation_defence_date' value='" . $row["dissertation_defence_date"] . "' /> 
                                 </td>
                                 <td>
+                                    <select name='qualifier'>
+                                        <option value='Yes' " . ($row["qualifier"] == "Yes" ? "selected" : "") . ">Yes</option>
+                                        <option value='No' " . ($row["qualifier"] == "No" ? "selected" : "") . ">No</option>
+                                    </select>
+                                </td>
+                                <td>
                                     <input type='hidden' name='student_id' value='" . $row["student_id"] . "' />
                                     <button type='submit'>Update Dates</button>
                                 </td>
@@ -103,6 +113,7 @@ $result = $stmt->get_result();
             ?>
         </tbody>
     </table>
+    <button onclick="window.location.href='instructorprofile.php'">Back</button>
 </body>
 </html>
 
