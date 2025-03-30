@@ -5,7 +5,6 @@ create table account
 	 primary key(email)
 	);
 
-
 create table department
 	(dept_name	varchar(100), 
 	 location	varchar(100), 
@@ -91,7 +90,8 @@ create table section
 	 year			numeric(4,0) check (year > 1990 and year < 2100), 
 	 instructor_id		varchar(10),
 	 classroom_id   	varchar(8),
-	 time_slot_id		varchar(8),	
+	 time_slot_id		varchar(8),
+	 current_enrollment	numeric(4,0) default 0,	
 	 primary key (course_id, section_id, semester, year),
 	 foreign key (course_id) references course (course_id)
 		on delete cascade,
@@ -99,6 +99,21 @@ create table section
 		on delete set null,
 	 foreign key (time_slot_id) references time_slot(time_slot_id)
 		on delete set null
+	);
+
+create table waitlist
+	(student_id		varchar(10), 
+	 course_id		varchar(20),
+	 section_id		varchar(10), 
+	 semester		varchar(6),
+	 year			numeric(4,0),
+	 priority		numeric(4,0) default 1,
+	 primary key (student_id, course_id, section_id, semester, year),
+	 foreign key (student_id) references student (student_id)
+		on delete cascade,
+	 foreign key (course_id, section_id) references 
+	     section (course_id, section_id)
+		on delete cascade
 	);
 
 create table prereq
@@ -180,6 +195,27 @@ create table take
 		on delete cascade
 	);
 
+
+DELIMITER $$
+create TRIGGER update_enrollment_add
+AFTER INSERT ON take
+FOR EACH ROW
+BEGIN
+	UPDATE section
+	SET current_enrollment = current_enrollment + 1
+	WHERE course_id = NEW.course_id AND section_id = NEW.section_id AND semester = NEW.semester AND year = NEW.year;
+END$$
+
+create TRIGGER update_enrollment_delete
+AFTER DELETE ON take
+FOR EACH ROW
+BEGIN
+	UPDATE section
+	SET current_enrollment = current_enrollment - 1
+	WHERE course_id = OLD.course_id AND section_id = OLD.section_id AND semester = OLD.semester AND year = OLD.year;
+END$$
+DELIMITER ;
+=======
 create table alerts
 	(student_id		varchar(24),
 	 alert_type	varchar(24),
@@ -187,6 +223,7 @@ create table alerts
 	 primary key(student_id, alert_type),
 	 foreign key (student_id) references student (student_id)
 	);
+
 
 insert into department (dept_name, location) value ('Miner School of Computer & Information Sciences', 'Dandeneau Hall, 1 University Avenue, Lowell, MA 01854');
 
@@ -198,6 +235,7 @@ insert into account (email, password, type) values ('Johannes_Weis@uml.edu', '12
 insert into account (email, password, type) values ('Charles_Wilkes@uml.edu', '123456', 'instructor');
 insert into account (email, password, type) values ('Hugo_akitaya@uml.edu', '123456', 'instructor');
 
+insert into account (email, password, type) values ('John_Doe1@student.uml.edu', '654321', 'student');
 insert into account (email, password, type) values ('Chak_Pat@student.uml.edu', '654321', 'student');
 insert into account (email, password, type) values ('Prath_Kot@student.uml.edu', '654321', 'student');
 insert into account (email, password, type) values ('Rus_John@student.uml.edu', '654321', 'student');
@@ -261,7 +299,7 @@ insert into time_slot (time_slot_id, day, start_time, end_time) value ('TS7', 'M
 insert into time_slot (time_slot_id, day, start_time, end_time) value ('TS8', 'TuTh', '11:00:00', '12:15:00');
 insert into time_slot (time_slot_id, day, start_time, end_time) value ('TS9', 'TuTh', '12:30:00', '13:45:00');
 
-insert into classroom (classroom_id,building,room_number,capacity) values ('DAN401','Dandeneu','401',30);
+insert into classroom (classroom_id,building,room_number,capacity) values ('DAN401','Dandeneu','401',11);
 insert into classroom (classroom_id,building,room_number,capacity) values ('DAN415','Dandeneu','415',45);
 insert into classroom (classroom_id,building,room_number,capacity) values ('OLS415','Olsen Hall','303',40);
 insert into classroom (classroom_id,building,room_number,capacity) values ('OLN150','Olney Hall','150',200);
