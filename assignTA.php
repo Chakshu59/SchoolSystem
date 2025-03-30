@@ -29,12 +29,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['course_id'])) {
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['student_id']) && isset($_POST['section_id']) && isset($_POST['course_id']) && isset($_POST['semester']) && isset($_POST['year'])) {
-    echo "<p><strong>Student ID:</strong> " . htmlspecialchars($_POST['student_id']) . "</p>";
-    echo "<p><strong>Course ID:</strong> " . htmlspecialchars($_POST['course_id']) . "</p>";
-    echo "<p><strong>Section ID:</strong> " . htmlspecialchars($_POST['section_id']) . "</p>";
-    echo "<p><strong>Semester:</strong> " . htmlspecialchars($_POST['semester']) . "</p>";
-    echo "<p><strong>Year:</strong> " . htmlspecialchars($_POST['year']) . "</p>";
-
     $student_id = $_POST['student_id'];
     $section_id = $_POST['section_id'];
     $course_id = $_POST['course_id'];
