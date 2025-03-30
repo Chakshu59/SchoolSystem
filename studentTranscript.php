@@ -62,6 +62,18 @@ if ($stmt->num_rows > 0) {
     $phd = false;
 }
 $stmt->close();
+
+//Check if student is master student
+$stmt = $conn->prepare("SELECT student_id FROM master WHERE student_id =?;");
+$stmt->bind_param("s",$student_id);
+$stmt->execute();
+$stmt->store_result();
+if ($stmt->num_rows > 0) {
+    $master = true;
+} else {
+    $master = false;
+}
+$stmt->close();
 ?>
 
 <!DOCTYPE html>
@@ -73,6 +85,23 @@ $stmt->close();
 </head>
 <body>
     <h2>Transcript for, <?php echo htmlspecialchars($name); ?>!</h2>
+    <div>
+        <h3>Total Credits Earned</h3>
+        <?php
+        if ($master) {
+            $stmt = $conn->prepare("SELECT total_credits FROM master WHERE student_id = ?;");
+        } else {
+            $stmt = $conn->prepare("SELECT total_credits FROM undergraduate WHERE student_id = ?;");
+        }
+        $stmt->bind_param("s", $student_id);
+        $stmt->execute();
+        $stmt->store_result();
+        $stmt->bind_result($total_credits);
+        $stmt->fetch();
+        $stmt->close();
+        echo "<p>Total Credits Earned: " . htmlspecialchars($total_credits) . "</p>";
+        ?>
+    </div>
     <div>
         <h3>Classes Taken</h3>
         <table border="1">

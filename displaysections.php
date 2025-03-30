@@ -71,7 +71,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['course_id'])) {
     }
     $stmt->close();
 
-    $stmt = $conn->prepare("SELECT section_id, semester, year, instructor_id, classroom_id, time_slot_id FROM section WHERE course_id = ?;");
+    $stmt = $conn->prepare("SELECT s.section_id, s.semester, s.year, i.instructor_name, s.classroom_id, s.time_slot_id FROM section s LEFT JOIN instructor i ON s.instructor_id = i.instructor_id WHERE course_id = ?;");
     $stmt->bind_param("s", $course_id);
     $stmt->execute();
     $stmt = $stmt->get_result();
@@ -145,7 +145,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['course_id'])) {
                                 <td>" . $row["section_id"] . "</td>
                                 <td>" . $row["semester"] . "</td>
                                 <td>" . $row["year"] . "</td>
-                                <td>" . $row["instructor_id"] . "</td>
+                                <td>" . $row["instructor_name"] . "</td>
                                 <td>" . $row["classroom_id"] . "</td>
                                 <td>" . $row["time_slot_id"] . "</td>
                                 <td>" . htmlspecialchars($taStudentID) . "</td>
@@ -156,7 +156,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['course_id'])) {
                                         <input type='hidden' name='course_id' value='" . $course_id . "'>
                                         <input type='hidden' name='semester' value='" . $row["semester"] . "'>
                                         <input type='hidden' name='year' value='" . $row["year"] . "'>
-                                        <input type='hidden' name='instructor_id' value='" . $row["instructor_id"] . "'>
+                                        <input type='hidden' name='instructor_id' value='" . $row["instructor_name"] . "'>
                                         <input type='hidden' name='classroom_id' value='" . $row["classroom_id"] . "'>
                                         <input type='hidden' name='time_slot_id' value='" . $row["time_slot_id"] . "'>
                                         <button type='submit'>Edit</button>
