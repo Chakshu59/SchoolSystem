@@ -35,8 +35,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['student_id']) && isset
     $semester = $_POST['semester'];
     $year = $_POST['year'];
 
-    $delete_ta = $conn->prepare("SELECT * FROM ta WHERE student_id = ?;");
-    $delete_ta->bind_param("s", $student_id);
+    $delete_ta = $conn->prepare("SELECT * FROM ta WHERE student_id = ? AND year = ? AND semester = ?;");
+    $delete_ta->bind_param("sss", $student_id, $year, $semester);
     $delete_ta->execute();
 
     if ($row = $delete_ta->get_result()->fetch_assoc()) {
@@ -99,11 +99,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['student_id']) && isset
             if ($stmt->num_rows > 0) {
                 while ($row = $stmt->fetch_assoc()) {
                     echo "<label>
-                    <input type='radio' name='section_id' value='{$row["section_id"]}' 
-                        onclick='setSectionDetails({$row["section_id"]}, \"{$row["semester"]}\", \"{$row["year"]}\")'>
+                    <input type='radio' name='section_id' value='{$row["section_id"]}' required>
                         Section: {$row["section_id"]} | {$row["semester"]} | {$row["year"]}
                     </label><br>";
 
+                    echo "<input type='hidden' name='section_id' value='{$row["section_id"]}'>";
                     echo "<input type='hidden' name='semester' value='{$row["semester"]}'>";
                     echo "<input type='hidden' name='year' value='{$row["year"]}'>";
                 }

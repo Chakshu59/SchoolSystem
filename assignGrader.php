@@ -34,16 +34,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['course_id']) && isset(
     $semester = $_POST['semester'];
     $year = $_POST['year'];
 
-    $checkUndergrad = $conn->prepare("SELECT * FROM undergraduate WHERE student_id = ?");
+    $checkUndergrad = $conn->prepare("SELECT * FROM undergraduate WHERE student_id = ?;");
     $checkUndergrad->bind_param("s", $student_id);
     $checkUndergrad->execute();
     $result = $checkUndergrad->get_result();
 
     if ($result->num_rows > 0) {  // Undergrad
-        $delete_un_grader = $conn->prepare("SELECT * FROM undergraduategrader WHERE student_id = ?;");
-        $delete_un_grader->bind_param("s", $student_id);
+        //Delete if student is already a grader for a different class that semester
+        $delete_un_grader = $conn->prepare("SELECT * FROM undergraduategrader WHERE student_id = ? AND year = ? AND semester = ?;");
+        $delete_un_grader->bind_param("sss", $student_id, $year, $semester);
         $delete_un_grader->execute();
-
         if ($row = $delete_un_grader->get_result()->fetch_assoc()) {
             $del_SID = $row['student_id'];
             $del_SEC = $row['section_id'];
@@ -57,10 +57,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['course_id']) && isset(
         $delete_UN->execute();
         $delete_UN->close();
 
+        //Delete a student if already a grader in the section
         $delete_sec = $conn->prepare("SELECT * FROM undergraduategrader WHERE course_id = ? AND section_id = ? AND year = ? AND semester = ?;");
         $delete_sec->bind_param("ssss", $course_id, $section_id, $year, $semester);
         $delete_sec->execute();
-
         if($row = $delete_sec->get_result()->fetch_assoc()) {
             $del_SID = $row['student_id'];
             $del_SEC = $row['section_id'];
@@ -74,22 +74,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['course_id']) && isset(
         $delete_SEC->execute();
         $delete_SEC->close();
 
+        //Add the new student as a grader
         $add_UN = $conn->prepare("INSERT INTO undergraduategrader (student_id, course_id, section_id, semester, year) VALUES (?, ?, ?, ?, ?);");
         $add_UN->bind_param("sssss", $student_id, $course_id, $section_id, $semester, $year);
         $add_UN->execute();
         $add_UN->close();
 
     } else {  // check masters
-        $checkMasters = $conn->prepare("SELECT * FROM mastergrader WHERE student_id = ?");
+        $checkMasters = $conn->prepare("SELECT * FROM mastergrader WHERE student_id = ?;");
         $checkMasters->bind_param("s", $student_id);
         $checkMasters->execute();
         $result = $checkMasters->get_result();
 
         if ($result->num_rows > 0) { // Masters
-            $delete_ms_grader = $conn->prepare("SELECT * FROM mastergrader WHERE student_id = ?;");
-            $delete_ms_grader->bind_param("s", $student_id);
-            $delete_ms_grader->execute();
 
+            //Delete if student is already a grader for a different class that semester
+            $delete_ms_grader = $conn->prepare("SELECT * FROM mastergrader WHERE student_id = ? AND year = ? AND semester = ?;");
+            $delete_ms_grader->bind_param("sss", $student_id, $year, $semester);
+            $delete_ms_grader->execute();
             if ($row = $delete_ms_grader->get_result()->fetch_assoc()) {
                 $del_SID = $row['student_id'];
                 $del_SEC = $row['section_id'];
@@ -103,10 +105,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['course_id']) && isset(
             $delete_MS->execute();
             $delete_MS->close();
 
+            //Delete a student if already a grader in the section
             $delete_sec = $conn->prepare("SELECT * FROM mastergrader WHERE course_id = ? AND section_id = ? AND year = ? AND semester = ?;");
             $delete_sec->bind_param("ssss", $course_id, $section_id, $year, $semester);
             $delete_sec->execute();
-
             if($row = $delete_sec->get_result()->fetch_assoc()) {
                 $del_SID = $row['student_id'];
                 $del_SEC = $row['section_id'];
@@ -120,6 +122,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['course_id']) && isset(
             $delete_SEC->execute();
             $delete_SEC->close();
 
+            //Add the new student as a grader
             $add_UN = $conn->prepare("INSERT INTO mastergrader (student_id, course_id, section_id, semester, year) VALUES (?, ?, ?, ?, ?);");
             $add_UN->bind_param("sssss", $student_id, $course_id, $section_id, $semester, $year);
             $add_UN->execute();
@@ -156,8 +159,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['course_id']) && isset(
             if ($stmt->num_rows > 0) {
                 while ($row = $stmt->fetch_assoc()) {
                     echo "<label>
-                    <input type='radio' name='section_id' value='{$row["section_id"]}' 
-                        onclick='setSectionDetails({$row["section_id"]}, \"{$row["semester"]}\", \"{$row["year"]}\")'>
+                    <input type='radio' name='section_id' value='{$row["section_id"]}' required>
                         Section: {$row["section_id"]} | {$row["semester"]} | {$row["year"]}
                     </label><br>";
 
