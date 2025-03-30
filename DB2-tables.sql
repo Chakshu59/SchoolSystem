@@ -224,6 +224,13 @@ create table alerts
 	 foreign key (student_id) references student (student_id)
 	);
 
+create table parent
+	(email			varchar(50) not null,
+	 phone		varchar(20) not null,
+	 student_id		varchar(24),
+	 primary key (email, phone),
+	 foreign key (student_id) references student (student_id)
+	);
 
 insert into department (dept_name, location) value ('Miner School of Computer & Information Sciences', 'Dandeneau Hall, 1 University Avenue, Lowell, MA 01854');
 
