@@ -1,4 +1,4 @@
-# Phase2Database
+# School System Project
 Phase 2: University Course Management System
 Team Members:
 1. Russell Jones
